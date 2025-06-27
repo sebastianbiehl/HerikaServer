@@ -12,6 +12,7 @@ This plugin enhances the HerikaServer/CHIM experience by adding an inner voice n
 - **`*wrapped text*`** - Triggers inner voice narrator with the wrapped content
 - **`*`** (single asterisk) - Triggers self-generation for spontaneous actions/thoughts
 - **`*roleplay* text`** - Translates the text into character's speaking style and personality
+- **`*player* text`** or **`*talk* text`** - Out-of-character communication between real player and their character
 
 ### 3. Character Speech Style Translation
 - Use `*roleplay* your text here` to translate input into character's speaking style
@@ -35,6 +36,11 @@ This plugin enhances the HerikaServer/CHIM experience by adding an inner voice n
 - **InnerVoice()** - AI can trigger inner voice thoughts
 - **Observe()** - AI can make the character observe their surroundings
 
+### 6. Out-of-Character Communication
+- Use `*player*` or `*talk*` syntax to communicate directly with your character
+- This is real player to character communication, not in-game dialogue
+- Character responds as if talking to their player/controller
+
 ## Usage Examples
 
 ### Inner Voice Syntax
@@ -55,6 +61,12 @@ Result: Generates a spontaneous action or thought for the character.
 ```
 Result: Translates into character's speaking style, e.g., "Greetings, traveler. Well met on this fine day."
 
+### Out-of-Character Communication
+```
+*player* How are you feeling about this quest?
+```
+Result: Character responds directly to you as the player, e.g., "Well, player, I must admit this quest makes me nervous..."
+
 ### Normal Speech (unchanged)
 ```
 Hello there, friend
@@ -73,6 +85,7 @@ Result: Regular dialogue without style translation - processed normally by Herik
 - `innervoice` - Player's inner thoughts (triggered by `*wrapped*` syntax)
 - `inputtext_styled` - Character speech style translation (triggered by `*roleplay*` syntax)  
 - `selfgen` - Self-generated actions/thoughts (triggered by `*` syntax)
+- `talkwithplayer` - Out-of-character communication (triggered by `*player*` or `*talk*` syntax)
 - `autocomment` - Automatic interval-based commentary
 - `eventcomment` - Generic event-based commentary
 - `location_thoughts` - Location-specific automatic thoughts
@@ -104,6 +117,7 @@ The plugin includes a web-based configuration interface where you can customize:
 - **Inner Voice Prompts**: Customize the prompts used for `*wrapped*` syntax
 - **Roleplay Translation Prompt**: Customize how `*roleplay*` translates speech
 - **Self-Generation Prompts**: Customize prompts for `*` syntax  
+- **Talk with Player Prompt**: Customize out-of-character communication
 - **Event Commentary**: Enable/disable and adjust chances for different game events
 - **Automatic Commentary**: Configure timing intervals and chances
 - **Token Limits**: Adjust maximum response lengths for different response types

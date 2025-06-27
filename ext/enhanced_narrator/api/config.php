@@ -77,8 +77,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
             $newConfig .= "    ),\n";
             
-            // Direct prompt and Talk with player prompts
-            $newConfig .= "    \"directprompt_prompt\" => \"" . escapeString($settings['directprompt_prompt'] ?? '') . "\",\n";
+            // Talk with player prompt
             $newConfig .= "    \"talkwithplayer_prompt\" => \"" . escapeString($settings['talkwithplayer_prompt'] ?? '') . "\"\n";
             $newConfig .= ");\n\n";
         }

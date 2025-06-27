@@ -38,7 +38,6 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     if (preg_match('/^\*(.+?)\*$/', $processedInput, $matches)) {
         $gameRequest[0] = "innervoice";
         $gameRequest[3] = trim($matches[1]);
-        $request = selectRandomInArray($GLOBALS["PROMPTS"]["innervoice"]["cue"]);
         
         // IMPORTANT: Skip the normal dialogue target addition since this is inner voice
         $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
@@ -60,7 +59,6 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     elseif ($processedInput === '*') {
         $gameRequest[0] = "selfgen";
         $gameRequest[3] = "";
-        $request = selectRandomInArray($GLOBALS["PROMPTS"]["selfgen"]["cue"]);
         
         // IMPORTANT: Skip the normal dialogue target addition since this is inner voice
         $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
@@ -82,7 +80,6 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     elseif (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput, $matches)) {
         $gameRequest[0] = "inputtext_styled";
         $gameRequest[3] = trim($matches[1]);
-        $request = selectRandomInArray($GLOBALS["PROMPTS"]["inputtext_styled"]["cue"]);
         
         // Log the event
         $db->insert(
@@ -97,33 +94,10 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
             )
         );
     }
-    // 4. Handle *master* syntax for direct prompt instructions
-    elseif (preg_match('/^\*master\*\s*(.+)$/i', $processedInput, $matches)) {
-        $gameRequest[0] = "directprompt";
-        $gameRequest[3] = trim($matches[1]);
-        $request = selectRandomInArray($GLOBALS["PROMPTS"]["directprompt"]["cue"]);
-        
-        // IMPORTANT: Skip the normal dialogue target addition - this is a direct instruction
-        $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
-        
-        // Log the event
-        $db->insert(
-            'eventlog',
-            array(
-                'ts' => $gameRequest[1],
-                'gamets' => $gameRequest[2],
-                'type' => 'directprompt',
-                'data' => "Direct prompt instruction: " . $gameRequest[3],
-                'sess' => (php_sapi_name()=="cli")?'cli':'web',
-                'localts' => time()
-            )
-        );
-    }
-    // 5. Handle *player* or *talk* syntax for real player communicating with their character
+    // 4. Handle *player* or *talk* syntax for real player communicating with their character
     elseif (preg_match('/^\*(player|talk)\*\s*(.+)$/i', $processedInput, $matches)) {
         $gameRequest[0] = "talkwithplayer";
         $gameRequest[3] = trim($matches[2]);
-        $request = selectRandomInArray($GLOBALS["PROMPTS"]["talkwithplayer"]["cue"]);
         
         // IMPORTANT: Skip the normal dialogue target addition - this is the real player talking to their character
         $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
@@ -141,7 +115,7 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
             )
         );
     }
-    // 6. Normal input - no automatic translation
+    // 5. Normal input - no automatic translation
     else {
         // Keep normal flow without automatic style translation
         // This was removed so translation only happens when explicitly requested
@@ -185,12 +159,7 @@ if (in_array($gameRequest[0], ["location", "combatend", "quest", "lockpicked", "
         $gameRequest[0] = $commentType;
         $gameRequest[3] = "Recent event: " . $GLOBALS["ENHANCED_NARRATOR_ORIGINAL_EVENT"]["data"];
         
-        // Use appropriate prompts
-        if (isset($GLOBALS["PROMPTS"][$commentType])) {
-            $request = selectRandomInArray($GLOBALS["PROMPTS"][$commentType]["cue"]);
-        } else {
-            $request = selectRandomInArray($GLOBALS["PROMPTS"]["eventcomment"]["cue"]);
-        }
+        // The appropriate prompts will be used from prompts.php based on the event type
         
         // Log the event
         $db->insert(
@@ -215,9 +184,7 @@ if ($gameRequest[0] == "combatend") {
     // Use configured chance for inner voice instead of regular combat commentary
     if (rand(1, 100) <= $innerVoiceChance) {
         $gameRequest[0] = "combatend_inner";
-        if (isset($GLOBALS["PROMPTS"]["combatend_inner"])) {
-            $request = selectRandomInArray($GLOBALS["PROMPTS"]["combatend_inner"]["cue"]);
-        }
+        // The combatend_inner prompts will be used from prompts.php
         
         // Log the event
         $db->insert(
@@ -274,9 +241,7 @@ if (!in_array($gameRequest[0], ["innervoice", "selfgen", "eventcomment", "autoco
         // Switch to auto commentary
         $gameRequest[0] = "autocomment";
         $gameRequest[3] = "";
-        if (isset($GLOBALS["PROMPTS"]["autocomment"])) {
-            $request = selectRandomInArray($GLOBALS["PROMPTS"]["autocomment"]["cue"]);
-        }
+        // The autocomment prompts will be used from prompts.php
         
         // Update last comment time
         $_SESSION['last_auto_comment'] = $currentTime;

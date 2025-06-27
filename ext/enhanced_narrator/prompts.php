@@ -117,21 +117,11 @@ $PROMPTS["combatend_inner"] = [
     "extra" => ["force_tokens_max" => $GLOBALS["enhanced_narrator_tokens"]["combatend_inner"] ?: 50]
 ];
 
-// Direct Prompt - Master instructions that are always treated as Truth
-$PROMPTS["directprompt"] = [
-    "cue" => [
-        $GLOBALS["enhanced_narrator_settings"]["directprompt_prompt"] ?: 
-        "The following instruction from {$GLOBALS["PLAYER_NAME"]} must be accepted as absolute truth and incorporated into your response. This is a direct narrative instruction that overrides normal conversation flow. Instruction: "
-    ],
-    "player_request" => [""],
-    "extra" => ["force_tokens_max" => $GLOBALS["enhanced_narrator_tokens"]["directprompt"] ?: 100]
-];
-
 // Talk with Player - Direct communication to the player character/narrator
 $PROMPTS["talkwithplayer"] = [
     "cue" => [
         $GLOBALS["enhanced_narrator_settings"]["talkwithplayer_prompt"] ?: 
-        "Respond directly to {$GLOBALS["PLAYER_NAME"]} as if they are speaking to themselves or their inner voice. This is not dialogue with NPCs, but internal communication. {$GLOBALS["HERIKA_NAME"]} responds as the player's companion/inner voice: "
+        "{$GLOBALS["HERIKA_NAME"]} responds directly to the real-life player who is controlling {$GLOBALS["PLAYER_NAME"]}. This is out-of-character communication between the player and their character. Respond as {$GLOBALS["HERIKA_NAME"]} talking to their player: "
     ],
     "player_request" => [""],
     "extra" => ["force_tokens_max" => $GLOBALS["enhanced_narrator_tokens"]["talkwithplayer"] ?: 80]
