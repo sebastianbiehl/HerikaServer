@@ -1,0 +1,21 @@
+{
+  "name": "enhanced_narrator",
+  "description": "Enhanced narrator plugin with inner voice, speech style translation, and automatic commentary",
+  "version": "1.0.0",
+  "author": "CHIM Enhanced Narrator",
+  "features": [
+    "Inner voice narrator (player's thoughts)",
+    "*wrapped* syntax for narrator triggering", 
+    "* syntax for self-generation",
+    "*roleplay* syntax for character speech style translation",
+    "Configurable automatic PC commentary system",
+    "Event-based commentary with customizable triggers",
+    "Web-based configuration interface",
+    "Fully configurable prompts and timing"
+  ],
+  "configuration": {
+    "web_interface": "config.html",
+    "api_endpoint": "api/config.php",
+    "base_config": "config.base.php"
+  }
+}

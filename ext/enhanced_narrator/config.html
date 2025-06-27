@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enhanced Narrator Configuration</title>
+    <style>
+        :root {
+            --primary-color: #4CAF50;
+            --secondary-color: #2196F3;
+            --background-dark: #1a1a1a;
+            --background-light: #2d2d2d;
+            --text-color: #e0e0e0;
+            --border-color: #404040;
+            --success-color: #40c057;
+            --error-color: #f44336;
+            --warning-color: #ffc107;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--background-dark);
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            background: radial-gradient(circle at center, var(--background-light) 0%, var(--background-dark) 100%);
+            min-height: 100vh;
+        }
+
+        .config-container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .config-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background-color: rgba(45, 45, 45, 0.4);
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(4px);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .option-group {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: rgba(45, 45, 45, 0.3);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .option-label-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .option-label {
+            font-weight: 500;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .reset-button {
+            background: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: background 0.3s;
+        }
+
+        .reset-button:hover {
+            background: #1976D2;
+        }
+
+        .option-description {
+            color: var(--text-color);
+            opacity: 0.8;
+            margin: 10px 0;
+            font-size: 0.95rem;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        textarea {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--background-dark);
+            border: 1px solid var(--border-color);
+            color: var(--text-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.2);
+        }
+
+        input[type="checkbox"] {
+            margin-right: 10px;
+            transform: scale(1.2);
+            accent-color: var(--primary-color);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .prompt-list {
+            margin: 10px 0;
+        }
+
+        .prompt-item {
+            display: flex;
+            margin-bottom: 10px;
+            align-items: center;
+        }
+
+        .prompt-item textarea {
+            flex: 1;
+            margin-right: 10px;
+            min-height: 60px;
+        }
+
+        .remove-prompt {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+
+        .add-prompt {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .event-config {
+            padding: 15px;
+            background-color: rgba(45, 45, 45, 0.5);
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        .event-title {
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--secondary-color);
+            text-transform: capitalize;
+        }
+
+        .input-group {
+            margin: 10px 0;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--text-color);
+        }
+
+        .input-group input {
+            width: 100%;
+        }
+
+        .save-container {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+        }
+
+        .save-button {
+            background: linear-gradient(135deg, var(--primary-color), #45a049);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3);
+        }
+
+        .save-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+
+        .status-message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            text-align: center;
+            display: none;
+        }
+
+        .status-success {
+            background-color: rgba(64, 192, 87, 0.2);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .status-error {
+            background-color: rgba(244, 67, 54, 0.2);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        .nav-panel {
+            background-color: var(--background-light);
+            padding: 15px;
+            text-align: center;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-panel a {
+            display: inline-block;
+            color: var(--text-color);
+            text-decoration: none;
+            font-size: 1.1rem;
+            margin: 0 20px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--border-color);
+        }
+
+        .nav-panel a:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="config-container">
+        <div class="nav-panel">
+            <a href="../ui/index.php">← Back to Main UI</a>
+            <a href="#" onclick="resetAllToDefaults()">Reset All to Defaults</a>
+        </div>
+
+        <h1>Enhanced Narrator Configuration</h1>
+
+        <!-- Inner Voice & Roleplay Settings -->
+        <div class="config-section">
+            <div class="section-title">Inner Voice & Roleplay Settings</div>
+            
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Enable Enhanced Narrator</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('narrator-enabled')">Reset</button>
+                </div>
+                <div class="option-description">Enable/disable the entire Enhanced Narrator plugin functionality</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="narrator-enabled"> Enable Enhanced Narrator Plugin
+                </div>
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Inner Voice Prompts</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('inner-voice-prompts')">Reset</button>
+                </div>
+                <div class="option-description">Prompts used when *wrapped text* syntax triggers inner voice thoughts</div>
+                <div class="prompt-list" id="inner-voice-prompts">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <button class="add-prompt" onclick="addInnerVoicePrompt()">+ Add Prompt</button>
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Roleplay Translation Prompt</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('roleplay-prompt')">Reset</button>
+                </div>
+                <div class="option-description">Prompt used when *roleplay* syntax translates speech into character style</div>
+                <textarea id="roleplay-prompt" rows="3"></textarea>
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Self-Generation Prompts</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('selfgen-prompts')">Reset</button>
+                </div>
+                <div class="option-description">Prompts used when * syntax triggers self-generation</div>
+                <div class="prompt-list" id="selfgen-prompts">
+                    <!-- Populated by JavaScript -->
+                </div>
+                <button class="add-prompt" onclick="addSelfgenPrompt()">+ Add Prompt</button>
+            </div>
+        </div>
+
+        <!-- Event Commentary Settings -->
+        <div class="config-section">
+            <div class="section-title">Event Commentary Settings</div>
+            <div class="option-description">Configure automatic commentary triggers for different game events</div>
+            
+            <div class="event-grid" id="event-config">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Automatic Commentary Settings -->
+        <div class="config-section">
+            <div class="section-title">Automatic Commentary Settings</div>
+            
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Enable Automatic Commentary</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('auto-enabled')">Reset</button>
+                </div>
+                <div class="option-description">Enable automatic thoughts based on time intervals</div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="auto-enabled"> Enable Automatic Commentary
+                </div>
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Base Chance (%)</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('base-chance')">Reset</button>
+                </div>
+                <div class="option-description">Base percentage chance for automatic thoughts (increases over time)</div>
+                <input type="number" id="base-chance" min="0" max="50" step="1">
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Maximum Chance (%)</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('max-chance')">Reset</button>
+                </div>
+                <div class="option-description">Maximum percentage chance for automatic thoughts after long silence</div>
+                <input type="number" id="max-chance" min="0" max="100" step="1">
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Minimum Interval (seconds)</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('min-interval')">Reset</button>
+                </div>
+                <div class="option-description">Minimum time between automatic thoughts</div>
+                <input type="number" id="min-interval" min="30" max="300" step="10">
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Conversation Chance (%)</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('conversation-chance')">Reset</button>
+                </div>
+                <div class="option-description">Chance for follow-up thoughts during conversations</div>
+                <input type="number" id="conversation-chance" min="0" max="50" step="1">
+            </div>
+        </div>
+
+        <!-- Token Limits -->
+        <div class="config-section">
+            <div class="section-title">Token Limits</div>
+            <div class="option-description">Maximum token limits for different response types</div>
+            
+            <div class="event-grid" id="token-config">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+
+        <div class="save-container">
+            <button class="save-button" onclick="saveConfiguration()">Save Configuration</button>
+            <div class="status-message" id="status-message"></div>
+        </div>
+    </div>
+
+    <script>
+        let config = {};
+        let defaultConfig = {};
+
+        // Load configuration on page load
+        async function loadConfiguration() {
+            try {
+                const response = await fetch('api/config.php');
+                config = await response.json();
+                
+                const defaultResponse = await fetch('api/config.php?defaults=true');
+                defaultConfig = await defaultResponse.json();
+                
+                populateForm();
+            } catch (error) {
+                console.error('Error loading configuration:', error);
+                showStatus('Error loading configuration', 'error');
+            }
+        }
+
+        // Populate form with current configuration
+        function populateForm() {
+            const settings = config.enhanced_narrator_settings || {};
+            const events = config.enhanced_narrator_events || {};
+            const auto = config.enhanced_narrator_auto || {};
+            const tokens = config.enhanced_narrator_tokens || {};
+
+            // Basic settings
+            document.getElementById('narrator-enabled').checked = settings.enabled !== false;
+            document.getElementById('roleplay-prompt').value = settings.roleplay_prompt || '';
+            
+            // Auto settings
+            document.getElementById('auto-enabled').checked = auto.enabled !== false;
+            document.getElementById('base-chance').value = auto.base_chance || 8;
+            document.getElementById('max-chance').value = auto.max_chance || 15;
+            document.getElementById('min-interval').value = auto.min_interval || 60;
+            document.getElementById('conversation-chance').value = auto.conversation_chance || 10;
+
+            // Populate prompt lists
+            populatePromptList('inner-voice-prompts', settings.inner_voice_prompts || [], 'removeInnerVoicePrompt');
+            populatePromptList('selfgen-prompts', settings.selfgen_prompts || [], 'removeSelfgenPrompt');
+
+            // Populate event configuration
+            populateEventConfig(events);
+            
+            // Populate token configuration
+            populateTokenConfig(tokens);
+        }
+
+        // Populate prompt list
+        function populatePromptList(containerId, prompts, removeFunction) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            prompts.forEach((prompt, index) => {
+                const div = document.createElement('div');
+                div.className = 'prompt-item';
+                div.innerHTML = `
+                    <textarea rows="2">${prompt}</textarea>
+                    <button class="remove-prompt" onclick="${removeFunction}(${index})">Remove</button>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Event configuration
+        function populateEventConfig(events) {
+            const container = document.getElementById('event-config');
+            container.innerHTML = '';
+            
+            Object.keys(events).forEach(eventName => {
+                const event = events[eventName];
+                const div = document.createElement('div');
+                div.className = 'event-config';
+                
+                let innerVoiceHtml = '';
+                if (event.use_inner_voice !== undefined) {
+                    innerVoiceHtml = `
+                        <div class="input-group">
+                            <label>Inner Voice Chance (%):</label>
+                            <input type="number" id="event-${eventName}-inner" value="${event.use_inner_voice}" min="0" max="100" step="5">
+                        </div>
+                    `;
+                }
+                
+                div.innerHTML = `
+                    <div class="event-title">${eventName}</div>
+                    <div class="input-group">
+                        <label><input type="checkbox" id="event-${eventName}-enabled" ${event.enabled ? 'checked' : ''}> Enabled</label>
+                    </div>
+                    <div class="input-group">
+                        <label>Commentary Chance (%):</label>
+                        <input type="number" id="event-${eventName}-chance" value="${event.chance}" min="0" max="100" step="5">
+                    </div>
+                    ${innerVoiceHtml}
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Token configuration
+        function populateTokenConfig(tokens) {
+            const container = document.getElementById('token-config');
+            container.innerHTML = '';
+            
+            Object.keys(tokens).forEach(tokenType => {
+                const div = document.createElement('div');
+                div.className = 'event-config';
+                div.innerHTML = `
+                    <div class="event-title">${tokenType.replace('_', ' ')}</div>
+                    <div class="input-group">
+                        <label>Max Tokens:</label>
+                        <input type="number" id="token-${tokenType}" value="${tokens[tokenType]}" min="25" max="200" step="5">
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // Add prompt functions
+        function addInnerVoicePrompt() {
+            const container = document.getElementById('inner-voice-prompts');
+            const div = document.createElement('div');
+            div.className = 'prompt-item';
+            div.innerHTML = `
+                <textarea rows="2" placeholder="Enter new inner voice prompt..."></textarea>
+                <button class="remove-prompt" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function addSelfgenPrompt() {
+            const container = document.getElementById('selfgen-prompts');
+            const div = document.createElement('div');
+            div.className = 'prompt-item';
+            div.innerHTML = `
+                <textarea rows="2" placeholder="Enter new self-generation prompt..."></textarea>
+                <button class="remove-prompt" onclick="this.parentElement.remove()">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        // Remove prompt functions
+        function removeInnerVoicePrompt(index) {
+            const container = document.getElementById('inner-voice-prompts');
+            container.children[index].remove();
+        }
+
+        function removeSelfgenPrompt(index) {
+            const container = document.getElementById('selfgen-prompts');
+            container.children[index].remove();
+        }
+
+        // Collect form data
+        function collectFormData() {
+            const data = {
+                enhanced_narrator_settings: {
+                    enabled: document.getElementById('narrator-enabled').checked,
+                    roleplay_prompt: document.getElementById('roleplay-prompt').value,
+                    inner_voice_prompts: [],
+                    selfgen_prompts: []
+                },
+                enhanced_narrator_events: {},
+                enhanced_narrator_auto: {
+                    enabled: document.getElementById('auto-enabled').checked,
+                    base_chance: parseInt(document.getElementById('base-chance').value),
+                    max_chance: parseInt(document.getElementById('max-chance').value),
+                    min_interval: parseInt(document.getElementById('min-interval').value),
+                    conversation_chance: parseInt(document.getElementById('conversation-chance').value)
+                },
+                enhanced_narrator_tokens: {}
+            };
+
+            // Collect prompts
+            document.querySelectorAll('#inner-voice-prompts textarea').forEach(textarea => {
+                if (textarea.value.trim()) {
+                    data.enhanced_narrator_settings.inner_voice_prompts.push(textarea.value.trim());
+                }
+            });
+
+            document.querySelectorAll('#selfgen-prompts textarea').forEach(textarea => {
+                if (textarea.value.trim()) {
+                    data.enhanced_narrator_settings.selfgen_prompts.push(textarea.value.trim());
+                }
+            });
+
+            // Collect event data
+            Object.keys(config.enhanced_narrator_events || {}).forEach(eventName => {
+                data.enhanced_narrator_events[eventName] = {
+                    enabled: document.getElementById(`event-${eventName}-enabled`).checked,
+                    chance: parseInt(document.getElementById(`event-${eventName}-chance`).value)
+                };
+                
+                const innerElement = document.getElementById(`event-${eventName}-inner`);
+                if (innerElement) {
+                    data.enhanced_narrator_events[eventName].use_inner_voice = parseInt(innerElement.value);
+                }
+            });
+
+            // Collect token data
+            Object.keys(config.enhanced_narrator_tokens || {}).forEach(tokenType => {
+                data.enhanced_narrator_tokens[tokenType] = parseInt(document.getElementById(`token-${tokenType}`).value);
+            });
+
+            return data;
+        }
+
+        // Save configuration
+        async function saveConfiguration() {
+            try {
+                const data = collectFormData();
+                
+                const response = await fetch('api/config.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+                
+                if (result.status === 'success') {
+                    showStatus('Configuration saved successfully!', 'success');
+                } else {
+                    showStatus('Error: ' + result.message, 'error');
+                }
+            } catch (error) {
+                console.error('Error saving configuration:', error);
+                showStatus('Error saving configuration', 'error');
+            }
+        }
+
+        // Reset functions
+        function resetOptionToDefault(optionKey) {
+            // Implementation for individual option reset
+            loadConfiguration();
+        }
+
+        function resetAllToDefaults() {
+            if (confirm('Are you sure you want to reset all settings to defaults?')) {
+                config = JSON.parse(JSON.stringify(defaultConfig));
+                populateForm();
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('status-message');
+            statusElement.textContent = message;
+            statusElement.className = `status-message status-${type}`;
+            statusElement.style.display = 'block';
+            
+            setTimeout(() => {
+                statusElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Initialize
+        window.addEventListener('load', loadConfiguration);
+    </script>
+</body>
+</html>
