@@ -13,6 +13,11 @@
 // Access global variables
 global $db, $gameRequest;
 
+// Check if required variables are available
+if (!isset($db) || !is_object($db) || !isset($gameRequest) || !is_array($gameRequest)) {
+    return; // Required variables not ready, skip processing
+}
+
 // Load configuration
 require_once(__DIR__ . DIRECTORY_SEPARATOR . "config.base.php");
 if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config.php")) {
