@@ -40,6 +40,9 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
         $gameRequest[3] = trim($matches[1]);
         $request = selectRandomInArray($GLOBALS["PROMPTS"]["innervoice"]["cue"]);
         
+        // IMPORTANT: Skip the normal dialogue target addition since this is inner voice
+        $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
+        
         // Log the event
         $db->insert(
             'eventlog',
@@ -58,6 +61,9 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
         $gameRequest[0] = "selfgen";
         $gameRequest[3] = "";
         $request = selectRandomInArray($GLOBALS["PROMPTS"]["selfgen"]["cue"]);
+        
+        // IMPORTANT: Skip the normal dialogue target addition since this is inner voice
+        $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
         
         // Log the event
         $db->insert(
@@ -91,7 +97,51 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
             )
         );
     }
-    // 4. Normal input - no automatic translation
+    // 4. Handle *master* syntax for direct prompt instructions
+    elseif (preg_match('/^\*master\*\s*(.+)$/i', $processedInput, $matches)) {
+        $gameRequest[0] = "directprompt";
+        $gameRequest[3] = trim($matches[1]);
+        $request = selectRandomInArray($GLOBALS["PROMPTS"]["directprompt"]["cue"]);
+        
+        // IMPORTANT: Skip the normal dialogue target addition - this is a direct instruction
+        $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
+        
+        // Log the event
+        $db->insert(
+            'eventlog',
+            array(
+                'ts' => $gameRequest[1],
+                'gamets' => $gameRequest[2],
+                'type' => 'directprompt',
+                'data' => "Direct prompt instruction: " . $gameRequest[3],
+                'sess' => (php_sapi_name()=="cli")?'cli':'web',
+                'localts' => time()
+            )
+        );
+    }
+    // 5. Handle *player* or *talk* syntax for real player communicating with their character
+    elseif (preg_match('/^\*(player|talk)\*\s*(.+)$/i', $processedInput, $matches)) {
+        $gameRequest[0] = "talkwithplayer";
+        $gameRequest[3] = trim($matches[2]);
+        $request = selectRandomInArray($GLOBALS["PROMPTS"]["talkwithplayer"]["cue"]);
+        
+        // IMPORTANT: Skip the normal dialogue target addition - this is the real player talking to their character
+        $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
+        
+        // Log the event
+        $db->insert(
+            'eventlog',
+            array(
+                'ts' => $gameRequest[1],
+                'gamets' => $gameRequest[2],
+                'type' => 'talkwithplayer',
+                'data' => "Real player communication with character: " . $gameRequest[3],
+                'sess' => (php_sapi_name()=="cli")?'cli':'web',
+                'localts' => time()
+            )
+        );
+    }
+    // 6. Normal input - no automatic translation
     else {
         // Keep normal flow without automatic style translation
         // This was removed so translation only happens when explicitly requested
@@ -186,7 +236,7 @@ if ($gameRequest[0] == "combatend") {
 
 // 3. Interval-based automatic thoughts
 // Trigger based on time intervals and interaction frequency
-if (!in_array($gameRequest[0], ["innervoice", "selfgen", "eventcomment", "autocomment", "combatend_inner", "inputtext_styled"])) {
+if (!in_array($gameRequest[0], ["innervoice", "selfgen", "eventcomment", "autocomment", "combatend_inner", "inputtext_styled", "directprompt", "talkwithplayer"])) {
     
     $autoConfig = $GLOBALS["enhanced_narrator_auto"] ?? array();
     

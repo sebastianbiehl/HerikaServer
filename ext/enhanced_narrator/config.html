@@ -339,6 +339,24 @@
                 </div>
                 <button class="add-prompt" onclick="addSelfgenPrompt()">+ Add Prompt</button>
             </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Direct Prompt (*master*)</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('directprompt-prompt')">Reset</button>
+                </div>
+                <div class="option-description">Prompt used when *master* syntax provides direct AI instructions (always treated as Truth)</div>
+                <textarea id="directprompt-prompt" rows="3"></textarea>
+            </div>
+
+            <div class="option-group">
+                <div class="option-label-container">
+                    <label class="option-label">Talk with Player (*player* or *talk*)</label>
+                    <button class="reset-button" onclick="resetOptionToDefault('talkwithplayer-prompt')">Reset</button>
+                </div>
+                <div class="option-description">Prompt used when *player* or *talk* syntax allows the real-life player to communicate out-of-character with their character</div>
+                <textarea id="talkwithplayer-prompt" rows="3"></textarea>
+            </div>
         </div>
 
         <!-- Event Commentary Settings -->
@@ -449,6 +467,8 @@
             // Basic settings
             document.getElementById('narrator-enabled').checked = settings.enabled !== false;
             document.getElementById('roleplay-prompt').value = settings.roleplay_prompt || '';
+            document.getElementById('directprompt-prompt').value = settings.directprompt_prompt || '';
+            document.getElementById('talkwithplayer-prompt').value = settings.talkwithplayer_prompt || '';
             
             // Auto settings
             document.getElementById('auto-enabled').checked = auto.enabled !== false;
@@ -578,6 +598,8 @@
                 enhanced_narrator_settings: {
                     enabled: document.getElementById('narrator-enabled').checked,
                     roleplay_prompt: document.getElementById('roleplay-prompt').value,
+                    directprompt_prompt: document.getElementById('directprompt-prompt').value,
+                    talkwithplayer_prompt: document.getElementById('talkwithplayer-prompt').value,
                     inner_voice_prompts: [],
                     selfgen_prompts: []
                 },
