@@ -107,7 +107,10 @@ $commandSent = false;
 
 // Add
 if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s") || (strpos($gameRequest[0],"chatnf")!==false)) {
-	$gameRequest[3] = $gameRequest[3]." $DIALOGUE_TARGET";
+	// Check if Enhanced Narrator plugin wants to skip dialogue target (for inner voice, etc.)
+	if (!isset($GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"]) || !$GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"]) {
+		$gameRequest[3] = $gameRequest[3]." $DIALOGUE_TARGET";
+	}
 }
 
 ?>

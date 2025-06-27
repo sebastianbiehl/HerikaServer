@@ -75,7 +75,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             foreach ($settings['selfgen_prompts'] as $prompt) {
                 $newConfig .= "        \"" . escapeString($prompt) . "\",\n";
             }
-            $newConfig .= "    )\n";
+            $newConfig .= "    ),\n";
+            
+            // Direct prompt and Talk with player prompts
+            $newConfig .= "    \"directprompt_prompt\" => \"" . escapeString($settings['directprompt_prompt'] ?? '') . "\",\n";
+            $newConfig .= "    \"talkwithplayer_prompt\" => \"" . escapeString($settings['talkwithplayer_prompt'] ?? '') . "\"\n";
             $newConfig .= ");\n\n";
         }
         
