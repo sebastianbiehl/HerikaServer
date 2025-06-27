@@ -174,6 +174,7 @@ if (in_array($gameRequest[0], ["location", "combatend", "quest", "lockpicked", "
             )
         );
     }
+    }
 }
 
 // 2. Special handling for combat end - prefer inner voice
