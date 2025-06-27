@@ -10,6 +10,9 @@
  * - Automatic commentary triggers
  */
 
+// Access global variables
+global $db, $gameRequest;
+
 // Load configuration
 require_once(__DIR__ . DIRECTORY_SEPARATOR . "config.base.php");
 if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config.php")) {
