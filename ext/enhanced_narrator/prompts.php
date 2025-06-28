@@ -18,7 +18,54 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config.php")) {
 
 // Check if plugin is enabled
 if (!isset($GLOBALS["enhanced_narrator_settings"]["enabled"]) || !$GLOBALS["enhanced_narrator_settings"]["enabled"]) {
+    error_log("Enhanced Narrator Prompts: Plugin disabled, not loading prompts");
     return; // Plugin disabled, don't add prompts
+}
+
+error_log("Enhanced Narrator Prompts: Loading custom prompts");
+
+// EARLY SYNTAX DETECTION - Process input before request.php runs
+global $gameRequest;
+if (isset($gameRequest) && is_array($gameRequest) && 
+    (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s"))) {
+    
+    $originalInput = $gameRequest[3];
+    
+    // Clean input (remove player name and dialogue target)
+    $cleanedInput = $originalInput;
+    if (isset($GLOBALS["PLAYER_NAME"])) {
+        $playerPrefix = $GLOBALS["PLAYER_NAME"] . ":";
+        if (strpos($cleanedInput, $playerPrefix) === 0) {
+            $cleanedInput = substr($cleanedInput, strlen($playerPrefix));
+            $cleanedInput = ltrim($cleanedInput);
+        }
+    }
+    $cleanedInput = preg_replace('/\s*\(Talking to [^)]+\)\s*$/', '', $cleanedInput);
+    $processedInput = trim($cleanedInput);
+    
+    error_log("Enhanced Narrator Prompts: Processing '$processedInput'");
+    
+    // Change event type based on syntax BEFORE request.php runs
+    if (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput, $matches)) {
+        error_log("Enhanced Narrator Prompts: ROLEPLAY detected, changing to inputtext_styled");
+        $gameRequest[0] = "inputtext_styled";
+        $gameRequest[3] = trim($matches[1]);
+    }
+    elseif (preg_match('/^\*(player|talk)\*\s*(.+)$/i', $processedInput, $matches)) {
+        error_log("Enhanced Narrator Prompts: PLAYER/TALK detected, changing to talkwithplayer");
+        $gameRequest[0] = "talkwithplayer";
+        $gameRequest[3] = trim($matches[2]);
+    }
+    elseif ($processedInput === '*') {
+        error_log("Enhanced Narrator Prompts: SELFGEN detected, changing to selfgen");
+        $gameRequest[0] = "selfgen";
+        $gameRequest[3] = "";
+    }
+    elseif (preg_match('/^\*(.+?)\*$/', $processedInput, $matches)) {
+        error_log("Enhanced Narrator Prompts: INNER VOICE detected, changing to innervoice");
+        $gameRequest[0] = "innervoice";
+        $gameRequest[3] = trim($matches[1]);
+    }
 }
 
 // Inner voice narrator - player's thoughts
