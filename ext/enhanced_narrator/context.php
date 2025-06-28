@@ -45,6 +45,12 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     $processedInput = trim($originalInput);
     
     error_log("Enhanced Narrator: Processing input: '$processedInput'");
+    error_log("Enhanced Narrator: Input length: " . strlen($processedInput));
+    error_log("Enhanced Narrator: Input bytes: " . bin2hex($processedInput));
+    
+    // Test each pattern individually
+    error_log("Enhanced Narrator: Testing *roleplay* pattern: " . (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput) ? "MATCH" : "NO MATCH"));
+    error_log("Enhanced Narrator: Testing *wrapped* pattern: " . (preg_match('/^\*(.+?)\*$/', $processedInput) ? "MATCH" : "NO MATCH"));
     
     // Check for special syntax patterns - ORDER MATTERS!
     
