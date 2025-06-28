@@ -15,6 +15,7 @@ global $db, $gameRequest;
 
 // Check if required variables are available
 if (!isset($db) || !is_object($db) || !isset($gameRequest) || !is_array($gameRequest)) {
+    error_log("Enhanced Narrator: Required variables not available - db: " . (isset($db) ? "set" : "missing") . ", gameRequest: " . (isset($gameRequest) ? "set" : "missing"));
     return; // Required variables not ready, skip processing
 }
 
@@ -26,8 +27,11 @@ if (file_exists(__DIR__ . DIRECTORY_SEPARATOR . "config.php")) {
 
 // Check if plugin is enabled
 if (!isset($GLOBALS["enhanced_narrator_settings"]["enabled"]) || !$GLOBALS["enhanced_narrator_settings"]["enabled"]) {
+    error_log("Enhanced Narrator: Plugin disabled or not configured");
     return; // Plugin disabled, don't process anything
 }
+
+error_log("Enhanced Narrator: Plugin loaded and enabled");
 
 // Start session for tracking automatic commentary timing
 if (session_status() == PHP_SESSION_NONE) {
@@ -40,10 +44,13 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     $originalInput = $gameRequest[3];
     $processedInput = trim($originalInput);
     
+    error_log("Enhanced Narrator: Processing input: '$processedInput'");
+    
     // Check for special syntax patterns - ORDER MATTERS!
     
     // 1. Handle *roleplay* syntax for character speech style translation (MUST BE FIRST)
     if (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput, $matches)) {
+        error_log("Enhanced Narrator: ROLEPLAY matched! Changing to inputtext_styled");
         $gameRequest[0] = "inputtext_styled";
         $gameRequest[3] = trim($matches[1]);
         
@@ -104,6 +111,7 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     }
     // 4. Handle *wrapped* syntax for inner voice narrator (MUST BE LAST)
     elseif (preg_match('/^\*(.+?)\*$/', $processedInput, $matches)) {
+        error_log("Enhanced Narrator: INNER VOICE matched! Changing to innervoice");
         $gameRequest[0] = "innervoice";
         $gameRequest[3] = trim($matches[1]);
         
