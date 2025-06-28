@@ -34,7 +34,7 @@ $PROMPTS["innervoice"] = [
 $PROMPTS["inputtext_styled"] = [
     "cue" => [
         $GLOBALS["enhanced_narrator_settings"]["roleplay_prompt"] ?: 
-        "Translate {$GLOBALS["PLAYER_NAME"]}'s words into their characteristic speaking style and personality. Consider their background, class, and recent experiences. Write it as: \"{$GLOBALS["PLAYER_NAME"]}: [translated speech]\" $MAXIMUM_WORDS"
+        "Translate {$GLOBALS["PLAYER_NAME"]}'s words into their characteristic speaking style and personality. Consider their background, class, and recent experiences. Write ONLY the translated speech without any prefix or character name. $MAXIMUM_WORDS"
     ],
     "player_request" => [""],
     "extra" => ["force_tokens_max" => $GLOBALS["enhanced_narrator_tokens"]["roleplay"] ?: 100]

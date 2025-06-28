@@ -40,14 +40,32 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     $originalInput = $gameRequest[3];
     $processedInput = trim($originalInput);
     
-    // Check for special syntax patterns
+    // Check for special syntax patterns - ORDER MATTERS!
     
-    // 1. Handle *wrapped* syntax for inner voice narrator
-    if (preg_match('/^\*(.+?)\*$/', $processedInput, $matches)) {
-        $gameRequest[0] = "innervoice";
+    // 1. Handle *roleplay* syntax for character speech style translation (MUST BE FIRST)
+    if (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput, $matches)) {
+        $gameRequest[0] = "inputtext_styled";
         $gameRequest[3] = trim($matches[1]);
         
-        // IMPORTANT: Skip the normal dialogue target addition since this is inner voice
+        // Log the event
+        $db->insert(
+            'eventlog',
+            array(
+                'ts' => $gameRequest[1],
+                'gamets' => $gameRequest[2],
+                'type' => 'inputtext_styled',
+                'data' => "Speech style translation: " . $gameRequest[3],
+                'sess' => (php_sapi_name()=="cli")?'cli':'web',
+                'localts' => time()
+            )
+        );
+    }
+    // 2. Handle *player* or *talk* syntax for real player communicating with their character
+    elseif (preg_match('/^\*(player|talk)\*\s*(.+)$/i', $processedInput, $matches)) {
+        $gameRequest[0] = "talkwithplayer";
+        $gameRequest[3] = trim($matches[2]);
+        
+        // IMPORTANT: Skip the normal dialogue target addition - this is the real player talking to their character
         $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
         
         // Log the event
@@ -56,14 +74,14 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
             array(
                 'ts' => $gameRequest[1],
                 'gamets' => $gameRequest[2],
-                'type' => 'innervoice',
-                'data' => "Inner voice triggered: " . $gameRequest[3],
+                'type' => 'talkwithplayer',
+                'data' => "Real player communication with character: " . $gameRequest[3],
                 'sess' => (php_sapi_name()=="cli")?'cli':'web',
                 'localts' => time()
             )
         );
     }
-    // 2. Handle single * for self-generation
+    // 3. Handle single * for self-generation
     elseif ($processedInput === '*') {
         $gameRequest[0] = "selfgen";
         $gameRequest[3] = "";
@@ -84,30 +102,12 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
             )
         );
     }
-    // 3. Handle *roleplay* syntax for character speech style translation
-    elseif (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput, $matches)) {
-        $gameRequest[0] = "inputtext_styled";
+    // 4. Handle *wrapped* syntax for inner voice narrator (MUST BE LAST)
+    elseif (preg_match('/^\*(.+?)\*$/', $processedInput, $matches)) {
+        $gameRequest[0] = "innervoice";
         $gameRequest[3] = trim($matches[1]);
         
-        // Log the event
-        $db->insert(
-            'eventlog',
-            array(
-                'ts' => $gameRequest[1],
-                'gamets' => $gameRequest[2],
-                'type' => 'inputtext_styled',
-                'data' => "Speech style translation: " . $gameRequest[3],
-                'sess' => (php_sapi_name()=="cli")?'cli':'web',
-                'localts' => time()
-            )
-        );
-    }
-    // 4. Handle *player* or *talk* syntax for real player communicating with their character
-    elseif (preg_match('/^\*(player|talk)\*\s*(.+)$/i', $processedInput, $matches)) {
-        $gameRequest[0] = "talkwithplayer";
-        $gameRequest[3] = trim($matches[2]);
-        
-        // IMPORTANT: Skip the normal dialogue target addition - this is the real player talking to their character
+        // IMPORTANT: Skip the normal dialogue target addition since this is inner voice
         $GLOBALS["ENHANCED_NARRATOR_SKIP_DIALOGUE_TARGET"] = true;
         
         // Log the event
@@ -116,8 +116,8 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
             array(
                 'ts' => $gameRequest[1],
                 'gamets' => $gameRequest[2],
-                'type' => 'talkwithplayer',
-                'data' => "Real player communication with character: " . $gameRequest[3],
+                'type' => 'innervoice',
+                'data' => "Inner voice triggered: " . $gameRequest[3],
                 'sess' => (php_sapi_name()=="cli")?'cli':'web',
                 'localts' => time()
             )
