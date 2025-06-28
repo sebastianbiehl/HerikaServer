@@ -45,12 +45,26 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     $processedInput = trim($originalInput);
     
     error_log("Enhanced Narrator: Processing input: '$processedInput'");
-    error_log("Enhanced Narrator: Input length: " . strlen($processedInput));
-    error_log("Enhanced Narrator: Input bytes: " . bin2hex($processedInput));
     
-    // Test each pattern individually
-    error_log("Enhanced Narrator: Testing *roleplay* pattern: " . (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput) ? "MATCH" : "NO MATCH"));
-    error_log("Enhanced Narrator: Testing *wrapped* pattern: " . (preg_match('/^\*(.+?)\*$/', $processedInput) ? "MATCH" : "NO MATCH"));
+    // Remove player name prefix (e.g., "Ysena: ") and dialogue target suffix (e.g., " (Talking to everyone)")
+    $cleanedInput = $processedInput;
+    
+    // Remove player name prefix: "PlayerName: " 
+    if (isset($GLOBALS["PLAYER_NAME"])) {
+        $playerPrefix = $GLOBALS["PLAYER_NAME"] . ":";
+        if (strpos($cleanedInput, $playerPrefix) === 0) {
+            $cleanedInput = substr($cleanedInput, strlen($playerPrefix));
+            $cleanedInput = ltrim($cleanedInput); // Remove leading spaces
+        }
+    }
+    
+    // Remove dialogue target suffix: " (Talking to ...)"
+    $cleanedInput = preg_replace('/\s*\(Talking to [^)]+\)\s*$/', '', $cleanedInput);
+    
+    error_log("Enhanced Narrator: Cleaned input: '$cleanedInput'");
+    
+    // Use cleaned input for pattern matching
+    $processedInput = trim($cleanedInput);
     
     // Check for special syntax patterns - ORDER MATTERS!
     
@@ -58,7 +72,7 @@ if (($gameRequest[0] == "inputtext") || ($gameRequest[0] == "inputtext_s")) {
     if (preg_match('/^\*roleplay\*\s*(.+)$/i', $processedInput, $matches)) {
         error_log("Enhanced Narrator: ROLEPLAY matched! Changing to inputtext_styled");
         $gameRequest[0] = "inputtext_styled";
-        $gameRequest[3] = trim($matches[1]);
+        $gameRequest[3] = trim($matches[1]); // Just the text without *roleplay*
         
         // Log the event
         $db->insert(
